@@ -91,7 +91,14 @@ train %>%
 
 **Prompt:** Add a fitted line to the plot. (Hint: `geom_smooth()` is easiest.) Make the line straight. Note that you will have to change how treatment is represented. Right now, it is a factor. To fit a line, you need to create a new variable, `treatment_numeric` which is 1 for Treated and 0 for Control. 
 
-
+```{r scene 12}
+train %>%
+  mutate(treatment_numeric = if_else(treatment == "Treated", 1, 0)) %>%
+  ggplot(aes(x = treatment_numeric, y = att_chg)) + 
+  geom_jitter(alpha = 0.2, width = 0.05) + 
+  geom_hline(yintercept = train_mean_diff$mean_diff) +
+  geom_smooth(method = "lm")
+```
 
 
 # Challenge Questions
@@ -102,9 +109,15 @@ Material below is much harder. But, if a student group is charging ahead, they s
 
 **Prompt:** Use `lm()` to calculate the difference between att_chg of the treated and the controls. (You did read [section 10.4](https://davidkane9.github.io/PPBDS/10-confidence-intervals.html#using-lm-and-tidy-as-a-shortcut) of the *Primer*, right? The `tidy()` function from the **broom** library is very useful.) Note, we are not using the bootstrap here. We are just exploring a different way of doing the same calculation as we did for Prompt 8. Always a good idea to check out the *Primer*! Write down a sentence which interprets the meaning of the estimate for both the `(Intercept)` and the `treatmentTreated`.
 
+```{r scene 11}
+lm(att_chg ~ treatment, train) %>%
+  tidy(conf.int = TRUE)
+```
 # Scene 12
 
 **Prompt:** Calculate the 99% confidence interval for the difference between att_chg of the treated and the controls using a bootstrap approach and `lm()`? (Hint: After `group_by(replicate)`, you will want to use `nest()` to group all the observations from that group and then hand them to `lm()` using map functions and list columns.) Not easy! [Look at](https://davidkane9.github.io/PPBDS/11-regression.html#uncertainty-in-simple-linear-regressions) the *Primer* for an example of how to use `nest()` in this way.
+
+
 
 
 # Scene 13
